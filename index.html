@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para ti, con flores amarillas</title>
+  <meta name="description" content="Un regalo digital lleno de flores amarillas: girasoles, margaritas, tulipanes y rosas. Un mensaje cálido solo para ti." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌻</text></svg>" />
+
+  <!-- ============================================================
+       FUENTES (único recurso externo permitido)
+       ============================================================ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CONFIGURACIÓN DE ESTILOS (colores de la paleta)
+       ============================================================ */
+    :root {
+      --girasol:    #FFC93C;  /* amarillo girasol        */
+      --amarillo:   #FFE066;  /* amarillo suave          */
+      --crema:      #FFF8E1;  /* crema                   */
+      --verde:      #4C8C4A;  /* verde tallo             */
+      --marron:     #5B3A1E;  /* marrón cálido (textos)  */
+      --f-script:   "Dancing Script", "Segoe Script", cursive;
+      --f-texto:    "Nunito", "Segoe UI", sans-serif;
+    }
+
+    /* ============================================================
+       RESET Y BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--f-texto);
+      color: var(--marron);
+      line-height: 1.6;
+      overflow-x: hidden;
+      /* Degradado suave crema -> amarillo pálido */
+      background: linear-gradient(180deg, var(--crema) 0%, #FFF3C4 40%, var(--girasol) 130%);
+      background-attachment: fixed; /* desktop */
+      min-height: 100vh;
+    }
+    /* En móvil se desactiva: fixed suele romper el degradado y ralentiza el scroll */
+    @media (max-width: 768px) {
+      body { background-attachment: scroll; }
+    }
+
+    ::selection { background: var(--amarillo); color: var(--marron); }
+
+    /* Foco visible accesible */
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--marron);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    /* ============================================================
+       PÉTALOS FLOTANTES (fondos)
+       ============================================================ */
+    .petals-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .petal {
+      position: absolute;
+      top: -10vh;
+      opacity: 0;
+      animation-name: petal-fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      will-change: transform;
+    }
+    @keyframes petal-fall {
+      0%   { transform: translateY(0) translateX(0) rotate(0deg);    opacity: 0; }
+      8%   { opacity: .75; }
+      50%  { transform: translateY(52vh) translateX(6vw) rotate(140deg); opacity: .65; }
+      100% { transform: translateY(112vh) translateX(-4vw) rotate(280deg); opacity: 0; }
+    }
+
+    /* ============================================================
+       CONTENEDOR PRINCIPAL
+       ============================================================ */
+    .wrapper {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 20px);
+    }
+
+    /* .paso = filtro para animaciones en scroll */
+    .paso { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s ease; }
+    .paso.visible { opacity: 1; transform: none; }
+
+    /* ============================================================
+       SEO HERO
+       ============================================================ */
+    .hero {
+      min-height: 100vh;       /* fallback para navegadores viejos */
+      min-height: 100dvh;      /* móviles: altura dinámica del viewport */
+      min-height: 100svh;      /* móviles: vista estable sin barras */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: calc(48px + env(safe-area-inset-top)) 0 32px;
+    }
+    .hero h1 {
+      font-family: var(--f-script);
+      font-size: clamp(2.2rem, 9vw, 4.6rem);
+      line-height: 1.1;
+      color: var(--marron);
+      text-shadow: 0 2px 14px rgba(255, 224, 102, .7);
+      margin-bottom: .5rem;
+      padding: 0 .5ch;
+    }
+    .hero p.lema {
+      font-size: clamp(1rem, 3.6vw, 1.4rem);
+      font-weight: 600;
+      color: #7A5427;
+      max-width: 34ch;
+      padding: 0 .5ch;
+    }
+    .hero svg {
+      display: block;
+      width: 100%;
+      max-width: min(420px, 92vw);
+      height: auto;
+      margin-top: 1.4rem;
+    }
+
+    /* Crecimiento de las flores al cargar */
+    .grow-flower { transform-origin: 50% 100%; animation: grow-in 1.6s cubic-bezier(.22,.9,.3,1.4) both; }
+    @keyframes grow-in {
+      from { transform: scale(0) rotate(-6deg); }
+      to   { transform: scale(1) rotate(0deg); }
+    }
+    .sway  { transform-origin: 50% 100%; animation: sway 5s ease-in-out infinite; }
+    @keyframes sway {
+      0%,100% { transform: rotate(-2.2deg); }
+      50%     { transform: rotate(2.2deg); }
+    }
+
+    /* ============================================================
+       MENSAJE
+       ============================================================ */
+    .mensaje {
+      padding: 60px 8px;
+      text-align: center;
+    }
+    .mensaje h2 {
+      font-family: var(--f-script);
+      font-size: clamp(2rem, 6vw, 3rem);
+      color: var(--marron);
+      margin-bottom: 1.2rem;
+    }
+    .mensaje .carta {
+      display: inline-block;
+      width: 100%;
+      max-width: 620px;
+      background: rgba(255, 255, 255, .55);
+      backdrop-filter: blur(4px);
+      border-radius: 22px;
+      padding: clamp(22px, 6vw, 28px) clamp(16px, 5vw, 26px);
+      border: 1px solid rgba(255, 201, 60, .65);
+      box-shadow: 0 10px 30px rgba(91, 58, 30, .12);
+    }
+    .mensaje .carta p {
+      font-size: clamp(1.05rem, 3vw, 1.25rem);
+      font-weight: 600;
+    }
+    .mensaje .firma {
+      display: block;
+      margin-top: 1.2rem;
+      font-family: var(--f-script);
+      font-size: 1.9rem;
+      color: var(--verde);
+    }
+
+    /* ============================================================
+       CIERRE
+       ============================================================ */
+    .cierre {
+      text-align: center;
+      padding: 50px 8px 70px;
+    }
+    .cierre h2 {
+      font-family: var(--f-script);
+      font-size: clamp(2.2rem, 7vw, 3.6rem);
+      color: var(--marron);
+    }
+    .cierre .dedicatoria {
+      font-size: clamp(1.05rem, 3vw, 1.3rem);
+      font-weight: 700;
+      margin: 1.2rem auto 2rem;
+      max-width: 40ch;
+    }
+    .boton {
+      font-family: var(--f-texto);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--marron);
+      background: linear-gradient(180deg, var(--amarillo), var(--girasol));
+      border: none;
+      border-radius: 999px;
+      padding: 14px 34px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 201, 60, .6);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .boton:active { transform: translateY(0) scale(.97); }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      font-size: .85rem;
+      color: #8A6A3B;
+      border-top: 1px dashed rgba(91, 58, 30, .25);
+    }
+
+    /* ============================================================
+       MEDIA QUERIES  (mobile-first)
+       - teléfonos muy pequeños y móviles en horizontal (landscape)
+       ============================================================ */
+    /* Pantallas muy estrechas (320–360px): todo un poco más compacto */
+    @media (max-width: 360px) {
+      .hero { padding-top: 40px; }
+      .hero svg { max-width: 88vw; }
+      .mensaje, .cierre { padding-left: 4px; padding-right: 4px; }
+    }
+
+    /* Móvil en horizontal (poco alto): secciones no tan altas */
+    @media (max-height: 480px) and (orientation: landscape) {
+      .hero { min-height: auto; padding: 40px 0 24px; }
+      .hero svg { max-width: 40vh; }
+      .mensaje { padding: 36px 8px; }
+    }
+
+    /* Solo aplica hover en dispositivos capaces de hacerlo (no móvil) */
+    @media (hover: hover) and (pointer: fine) {
+      .boton:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(255,201,60,.75); }
+    }
+
+    /* ============================================================
+       PREFIERE MENOS MOVIMIENTO
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01s !important;
+      }
+      .paso { opacity: 1; transform: none; }
+      .petals-layer { display: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Fondo de pétalos flotantes -->
+  <div class="petals-layer" id="petalsLayer" aria-hidden="true"></div>
+
+  <div class="wrapper">
+
+    <!-- ==========================================================
+         HERO
+         ========================================================== -->
+    <header class="hero" id="hero">
+      <h1 id="heroTitle">Para ti, con flores amarillas</h1>
+      <p class="lema" id="heroLema">Un pedacito de sol plantado para alegrarte el día.</p>
+
+      <!-- Ramo SVG con forma de ramo real: flores en cúpula, tallos
+           reunidos, papel de estraza y lazo. Crece al cargar -->
+      <svg id="ramo" role="img" aria-label="Ramo real de flores amarillas con papel de estraza y lazo: cinco girasoles, cuatro tulipanes, dos margaritas y una rosa" viewBox="0 0 420 500" width="420" height="500">
+        <defs>
+          <radialGradient id="centro" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#8B5A2B" />
+            <stop offset="100%" stop-color="#5B3A1E" />
+          </radialGradient>
+          <linearGradient id="tallo" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#3E733C" />
+            <stop offset="100%" stop-color="#4C8C4A" />
+          </linearGradient>
+          <linearGradient id="papel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F6E3C2" />
+            <stop offset="100%" stop-color="#E2C393" />
+          </linearGradient>
+        </defs>
+
+        <!-- ==================== FETOS DE RELLENO (detrás) ==================== -->
+        <g fill="#3E733C" opacity=".95">
+          <path class="grow-flower" style="animation-delay:.3s" d="M88 210 Q 74 186 66 160 Q 92 178 88 210 Z" />
+          <path class="grow-flower" style="animation-delay:.35s" d="M60 238 Q 46 216 44 192 Q 68 206 60 238 Z" />
+          <path class="grow-flower" style="animation-delay:.4s" d="M332 210 Q 346 186 354 160 Q 328 178 332 210 Z" />
+          <path class="grow-flower" style="animation-delay:.45s" d="M360 238 Q 374 216 376 192 Q 352 206 360 238 Z" />
+        </g>
+
+        <!-- ==================== TALLOS (convergen en el punto del manojo) ==================== -->
+        <g stroke="url(#tallo)" stroke-width="5" stroke-linecap="round" fill="none">
+          <path class="grow-flower" d="M210 392 C 209 300, 210 220, 210 180" />
+          <path class="grow-flower" style="animation-delay:.1s" d="M206 392 C 178 315, 160 240, 155 204" />
+          <path class="grow-flower" style="animation-delay:.15s" d="M214 392 C 242 315, 260 240, 265 204" />
+          <path class="grow-flower" style="animation-delay:.12s" d="M202 392 C 170 305, 138 225, 130 182" />
+          <path class="grow-flower" style="animation-delay:.17s" d="M218 392 C 250 305, 282 225, 290 182" />
+          <path class="grow-flower" style="animation-delay:.2s" d="M198 392 C 172 335, 140 285, 128 238" />
+          <path class="grow-flower" style="animation-delay:.25s" d="M222 392 C 248 335, 280 285, 292 238" />
+          <path class="grow-flower" style="animation-delay:.3s" d="M207 392 C 195 340, 186 292, 182 260" />
+          <path class="grow-flower" style="animation-delay:.33s" d="M213 392 C 225 340, 234 292, 238 260" />
+          <path class="grow-flower" style="animation-delay:.35s" d="M192 392 C 132 345, 108 292, 98 248" />
+          <path class="grow-flower" style="animation-delay:.38s" d="M228 392 C 288 345, 312 292, 322 248" />
+          <path class="grow-flower" style="animation-delay:.4s" d="M210 392 C 209 345, 210 300, 210 270" />
+        </g>
+
+        <!-- ==================== HOJAS MEDIAS ==================== -->
+        <g fill="#4C8C4A">
+          <path class="grow-flower" style="animation-delay:.5s" d="M150 318 C 126 306, 112 312, 104 326 C 122 314, 138 310, 150 318 Z" />
+          <path class="grow-flower" style="animation-delay:.55s" d="M270 318 C 294 306, 308 312, 316 326 C 298 314, 282 310, 270 318 Z" />
+          <path class="grow-flower" style="animation-delay:.6s" d="M176 344 C 158 336, 148 342, 142 352 C 156 344, 168 340, 176 344 Z" />
+          <path class="grow-flower" style="animation-delay:.62s" d="M244 344 C 262 336, 272 342, 278 352 C 264 344, 252 340, 244 344 Z" />
+        </g>
+
+        <!-- ==================== PAPEL DE ESTRAZA ==================== -->
+        <g class="grow-flower" style="animation-delay:.8s">
+          <!-- panel posterior (más oscuro) -->
+          <path d="M145 372 L 55 492 L 365 492 L 275 372 Z" fill="#E3C188" />
+          <!-- panel frontal -->
+          <path d="M168 372 L 74 500 L 346 500 L 252 372 Z" fill="url(#papel)" />
+          <!-- pliegues del papel -->
+          <path d="M168 372 L 74 500" stroke="#D9BC8A" stroke-width="2" stroke-linecap="round" fill="none" />
+          <path d="M252 372 L 346 500" stroke="#D9BC8A" stroke-width="2" stroke-linecap="round" fill="none" />
+          <!-- doblez superior -->
+          <path d="M168 372 L 252 372 L 268 390 L 152 390 Z" fill="#FBF0DB" />
+        </g>
+
+        <!-- ==================== LAZO ==================== -->
+        <g class="grow-flower" style="animation-delay:.9s">
+          <g class="sway" style="animation-delay:.2s">
+            <path d="M118 402 Q 210 376 302 402 Q 210 428 118 402 Z" fill="#2E5C33" />
+            <path d="M210 400 Q 181 386 176 406 Q 192 417 210 400 Z" fill="#3E733C" />
+            <path d="M210 400 Q 239 386 244 406 Q 228 417 210 400 Z" fill="#3E733C" />
+            <circle cx="210" cy="401" r="8" fill="#2E5C33" />
+            <line x1="207" y1="408" x2="200" y2="432" stroke="#3E733C" stroke-width="6" stroke-linecap="round" />
+            <line x1="213" y1="408" x2="220" y2="432" stroke="#3E733C" stroke-width="6" stroke-linecap="round" />
+          </g>
+        </g>
+
+        <!-- ==================== GIRASOL CENTRAL (grande, arriba) ==================== -->
+        <g class="grow-flower" style="animation-delay:.6s">
+          <g class="sway" style="animation-delay:.4s">
+            <g fill="#F5B83D" stroke="#E09C1E" stroke-width="1">
+              <ellipse cx="210" cy="150" rx="15" ry="33" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(30 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(60 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(90 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(120 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(150 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(180 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(210 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(240 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(270 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(300 210 150)" />
+              <ellipse cx="210" cy="150" rx="15" ry="33" transform="rotate(330 210 150)" />
+            </g>
+            <circle cx="210" cy="150" r="19" fill="url(#centro)" />
+            <g fill="#C98A3B" opacity=".85">
+              <circle cx="222" cy="150" r="1.6" /><circle cx="218" cy="159" r="1.6" />
+              <circle cx="210" cy="162" r="1.6" /><circle cx="202" cy="159" r="1.6" />
+              <circle cx="198" cy="150" r="1.6" /><circle cx="202" cy="141" r="1.6" />
+              <circle cx="210" cy="138" r="1.6" /><circle cx="218" cy="141" r="1.6" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== GIRASOL IZQUIERDO ==================== -->
+        <g class="grow-flower" style="animation-delay:.7s">
+          <g class="sway" style="animation-delay:.1s">
+            <g transform="rotate(-14 155 175)">
+              <g fill="#F5B83D" stroke="#E09C1E" stroke-width="1">
+                <ellipse cx="155" cy="175" rx="13" ry="29" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(40 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(80 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(120 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(160 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(200 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(240 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(280 155 175)" />
+                <ellipse cx="155" cy="175" rx="13" ry="29" transform="rotate(320 155 175)" />
+              </g>
+              <circle cx="155" cy="175" r="17" fill="url(#centro)" />
+              <g fill="#C98A3B" opacity=".8">
+                <circle cx="166" cy="175" r="1.5" /><circle cx="160" cy="184" r="1.5" />
+                <circle cx="150" cy="184" r="1.5" /><circle cx="144" cy="175" r="1.5" />
+                <circle cx="150" cy="166" r="1.5" /><circle cx="160" cy="166" r="1.5" />
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== GIRASOL DERECHO ==================== -->
+        <g class="grow-flower" style="animation-delay:.75s">
+          <g class="sway" style="animation-delay:.6s">
+            <g transform="rotate(14 265 175)">
+              <g fill="#F5B83D" stroke="#E09C1E" stroke-width="1">
+                <ellipse cx="265" cy="175" rx="13" ry="29" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(40 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(80 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(120 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(160 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(200 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(240 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(280 265 175)" />
+                <ellipse cx="265" cy="175" rx="13" ry="29" transform="rotate(320 265 175)" />
+              </g>
+              <circle cx="265" cy="175" r="17" fill="url(#centro)" />
+              <g fill="#C98A3B" opacity=".8">
+                <circle cx="276" cy="175" r="1.5" /><circle cx="270" cy="184" r="1.5" />
+                <circle cx="260" cy="184" r="1.5" /><circle cx="254" cy="175" r="1.5" />
+                <circle cx="260" cy="166" r="1.5" /><circle cx="270" cy="166" r="1.5" />
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== GIRASOL PEQUEÑO (arriba izquierda) ==================== -->
+        <g class="grow-flower" style="animation-delay:.8s">
+          <g class="sway" style="animation-delay:.3s">
+            <g transform="rotate(-20 130 150)">
+              <g fill="#F5B83D" stroke="#E09C1E" stroke-width="1">
+                <ellipse cx="130" cy="150" rx="10" ry="22" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(45 130 150)" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(90 130 150)" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(135 130 150)" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(180 130 150)" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(225 130 150)" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(270 130 150)" />
+                <ellipse cx="130" cy="150" rx="10" ry="22" transform="rotate(315 130 150)" />
+              </g>
+              <circle cx="130" cy="150" r="13" fill="url(#centro)" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== GIRASOL PEQUEÑO (arriba derecha) ==================== -->
+        <g class="grow-flower" style="animation-delay:.85s">
+          <g class="sway" style="animation-delay:.7s">
+            <g transform="rotate(20 290 150)">
+              <g fill="#F5B83D" stroke="#E09C1E" stroke-width="1">
+                <ellipse cx="290" cy="150" rx="10" ry="22" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(45 290 150)" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(90 290 150)" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(135 290 150)" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(180 290 150)" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(225 290 150)" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(270 290 150)" />
+                <ellipse cx="290" cy="150" rx="10" ry="22" transform="rotate(315 290 150)" />
+              </g>
+              <circle cx="290" cy="150" r="13" fill="url(#centro)" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== TULIPÁN IZQUIERDO ==================== -->
+        <g class="grow-flower" style="animation-delay:.9s">
+          <g class="sway" style="animation-delay:.15s">
+            <g transform="translate(-140 2) rotate(-25 270 238)">
+              <path d="M284 205 C 270 185, 258 190, 252 205 C 248 222, 258 236, 270 238 C 282 240, 298 232, 316 205 Z"
+                    fill="#FFC93C" stroke="#E8A41C" stroke-width="1.5" />
+              <path d="M270 238 C 276 221, 284 221, 290 238 Z" fill="#FFE066" opacity=".9" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== TULIPÁN DERECHO ==================== -->
+        <g class="grow-flower" style="animation-delay:.95s">
+          <g class="sway" style="animation-delay:.6s">
+            <g transform="translate(20 2) rotate(25 270 238)">
+              <path d="M284 205 C 270 185, 258 190, 252 205 C 248 222, 258 236, 270 238 C 282 240, 298 232, 316 205 Z"
+                    fill="#FFC93C" stroke="#E8A41C" stroke-width="1.5" />
+              <path d="M270 238 C 276 221, 284 221, 290 238 Z" fill="#FFE066" opacity=".9" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== TULIPÁN FRONTAL IZQUIERDO ==================== -->
+        <g class="grow-flower" style="animation-delay:1s">
+          <g class="sway" style="animation-delay:.9s">
+            <g transform="translate(-90 24) rotate(-12 270 238) scale(.85)">
+              <path d="M284 205 C 270 185, 258 190, 252 205 C 248 222, 258 236, 270 238 C 282 240, 298 232, 316 205 Z"
+                    fill="#FFC93C" stroke="#E8A41C" stroke-width="1.5" />
+              <path d="M270 238 C 276 221, 284 221, 290 238 Z" fill="#FFE066" opacity=".9" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== TULIPÁN FRONTAL DERECHO ==================== -->
+        <g class="grow-flower" style="animation-delay:1.05s">
+          <g class="sway" style="animation-delay:.5s">
+            <g transform="translate(-30 24) rotate(12 270 238) scale(.85)">
+              <path d="M284 205 C 270 185, 258 190, 252 205 C 248 222, 258 236, 270 238 C 282 240, 298 232, 316 205 Z"
+                    fill="#FFC93C" stroke="#E8A41C" stroke-width="1.5" />
+              <path d="M270 238 C 276 221, 284 221, 290 238 Z" fill="#FFE066" opacity=".9" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== MARGARITA FRONTAL IZQUIERDA ==================== -->
+        <g class="grow-flower" style="animation-delay:1.12s">
+          <g class="sway" style="animation-delay:.3s">
+            <g transform="translate(-78 23) rotate(-30 176 222)">
+              <g fill="#FFF8E1" stroke="#FFC93C" stroke-width="1">
+                <ellipse cx="176" cy="222" rx="9" ry="24" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(36 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(72 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(108 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(144 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(180 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(216 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(252 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(288 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(324 176 222)" />
+              </g>
+              <circle cx="176" cy="222" r="13" fill="#FFC93C" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== MARGARITA FRONTAL DERECHA ==================== -->
+        <g class="grow-flower" style="animation-delay:1.18s">
+          <g class="sway" style="animation-delay:.8s">
+            <g transform="translate(146 23) rotate(30 176 222)">
+              <g fill="#FFF8E1" stroke="#FFC93C" stroke-width="1">
+                <ellipse cx="176" cy="222" rx="9" ry="24" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(36 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(72 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(108 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(144 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(180 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(216 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(252 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(288 176 222)" />
+                <ellipse cx="176" cy="222" rx="9" ry="24" transform="rotate(324 176 222)" />
+              </g>
+              <circle cx="176" cy="222" r="13" fill="#FFC93C" />
+            </g>
+          </g>
+        </g>
+
+        <!-- ==================== ROSA CENTRAL (delantera) ==================== -->
+        <g class="grow-flower" style="animation-delay:1.25s">
+          <g class="sway" style="animation-delay:.4s">
+            <g transform="translate(210 245)">
+              <g fill="#FFC93C" stroke="#E09C1E" stroke-width="1">
+                <ellipse cx="0" cy="-14" rx="10" ry="14" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(45)" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(90)" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(135)" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(180)" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(225)" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(270)" />
+                <ellipse cx="0" cy="-14" rx="10" ry="14" transform="rotate(315)" />
+              </g>
+              <circle r="8" fill="#FFF8E1" />
+              <circle r="4" fill="#FFC93C" />
+            </g>
+          </g>
+        </g>
+      </svg>
+    </header>
+
+    <!-- ==========================================================
+         MENSAJE
+         ========================================================== -->
+    <section class="mensaje paso" id="mensaje" aria-labelledby="msgTitulo">
+      <h2 id="msgTitulo">Un mensaje para ti</h2>
+      <div class="carta">
+        <p id="msgTexto"></p>
+        <span class="firma" id="msgFirma"></span>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         CIERRE
+         ========================================================== -->
+    <section class="cierre paso" id="cierre" aria-labelledby="cieTitulo">
+      <h2 id="cieTitulo">Gracias por existir</h2>
+      <p class="dedicatoria" id="cierreDedicatoria"></p>
+      <button class="boton" id="btnReiniciar" type="button">Volver a empezar</button>
+    </section>
+
+    <footer>
+      Hecho por José &nbsp;•&nbsp; <span id="footFirma"></span>
+    </footer>
+  </div>
+
+  <script>
+    /* ============================================================
+       CONFIG: aquí se cambian TODOS los textos de la página
+       ============================================================ */
+    const CONFIG = {
+      titulo: "Para ti, con flores amarillas",                 // <h1> del HERO
+      lema: "Un pedacito de sol plantado para alegrarte el día.", // frase corta bajo el título
+      mensaje: [                                               // mensaje principal (líneas del H2 en adelante)
+        "No hay mejor regalo que la luz que llevas contigo.",
+        "Estas flores amarillas no se marchitan: son mi manera de recordarte",
+        "que el sol siempre encuentra la forma de volver a tu ventana.",
+        "Que cada pétalo te traiga una sonrisa, hoy y siempre."
+      ],
+      paraQuien: "Para ti, que haces brillar los días grises.", // dedicatoria del CIERRE
+      firma: "Con cariño",                                      // firma del mensaje
+      nombrePie: "Una persona que te quiere"                    // texto del footer
+    };
+
+    /* ============================================================
+       INYECCIÓN DE TEXTOS
+       ============================================================ */
+    document.getElementById("heroTitle").textContent = CONFIG.titulo;
+    document.getElementById("heroLema").textContent = CONFIG.lema;
+    document.getElementById("msgTexto").innerHTML = CONFIG.mensaje.map(l => l + "<br>").join("");
+    document.getElementById("msgFirma").textContent = CONFIG.firma;
+    document.getElementById("cierreDedicatoria").textContent = CONFIG.paraQuien;
+    document.getElementById("footFirma").textContent = CONFIG.nombrePie;
+
+    /* ============================================================
+       APARICIÓN POR SCROLL (IntersectionObserver)
+       ============================================================ */
+    const observador = new IntersectionObserver(entradas => {
+      entradas.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add("visible"); observador.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".paso").forEach(el => observador.observe(el));
+    /* El hero también aparece con la animación de crecimiento de las flores */
+    document.getElementById("hero").classList.add("visible");
+
+    /* ============================================================
+       PÉTALOS FLOTANDO (máx. 40, se limpian del viewport)
+       ============================================================ */
+    const PREFIERE_MENOS = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const capa = document.getElementById("petalsLayer");
+    const MAX_PETALOS = 40;
+
+    if (!PREFIERE_MENOS) {
+      const formasPetalo = [
+        // pétalo de margarita
+        `<path d="M4 0 C 12 4, 12 14, 4 22 C -4 14, -4 4, 4 0 Z" fill="#fff8e1" stroke="#ffc93c" stroke-width=".8"/>`,
+        // pétalo de girasol
+        `<ellipse cx="0" cy="11" rx="6" ry="11" fill="#ffc93c" stroke="#e8a41c" stroke-width=".8"/>`,
+        // pétalito amarillo simple
+        `<path d="M0 0 Q 8 8 2 20 Q -6 8 0 0 Z" fill="#ffe066"/>`,
+        // hoja verde
+        `<path d="M0 0 C 8 4, 10 12, 4 18 C 0 10, -2 4, 0 0 Z" fill="#4c8c4a" opacity=".8"/>`
+      ];
+
+      function crearPetalo() {
+        const p = document.createElement("span");
+        p.className = "petal";
+        p.innerHTML = formasPetalo[Math.floor(Math.random() * formasPetalo.length)];
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.fontSize = (8 + Math.random() * 12) + "px";
+        p.style.width = (9 + Math.random() * 13) + "px";
+        p.style.animationDuration = (7 + Math.random() * 9) + "s";
+        p.style.animationDelay = (Math.random() * 8) + "s";
+        capa.appendChild(p);
+        /* Elimina el pétalo al acabar su ciclo para no acumular nodos */
+        p.addEventListener("animationend", () => p.remove());
+      }
+
+      for (let i = 0; i < MAX_PETALOS; i++) crearPetalo();
+    }
+
+    /* ============================================================
+       INTERACCIÓN: brotan flores al hacer clic / tocar
+       ============================================================ */
+    function brotarFlores(x, y) {
+      const n = 5;
+      for (let i = 0; i < n; i++) {
+        const flor = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        flor.setAttribute("viewBox", "0 0 60 70");
+        const tam = 26 + Math.random() * 30;
+        flor.setAttribute("width", tam);
+        flor.setAttribute("height", tam * 1.15);
+        flor.setAttribute("aria-hidden", "true");
+        /* posiciona con leve dispersión aleatoria */
+        const dx = (Math.random() - .5) * 60;
+        const dy = (Math.random() - .5) * 40;
+        flor.style.position = "fixed";
+        flor.style.left = (x + dx) + "px";
+        flor.style.top = (y + dy) + "px";
+        flor.style.zIndex = "50";
+        flor.style.pointerEvents = "none";
+        /* flor sencilla de 8 pétalos */
+        const petals = [...Array(8)].map((_, k) =>
+          `<ellipse cx="30" cy="22" rx="6" ry="14" transform="rotate(${k * 45} 30 30)"/>`
+        ).join("");
+        flor.innerHTML =
+          `<g fill="#ffc93c">${petals}</g>` +
+          `<circle cx="30" cy="30" r="7" fill="#5b3a1e"/>` +
+          `<line x1="30" y1="35" x2="30" y2="66" stroke="#4c8c4a" stroke-width="3" stroke-linecap="round"/>`;
+        /* animación: escala pequeña -> crece y se desvanece */
+        flor.style.animation = "brotar .9s ease-out forwards";
+        document.body.appendChild(flor);
+        /* elimina el brote al terminar */
+        setTimeout(() => flor.remove(), 950);
+      }
+    }
+
+    /* CSS de la animación de los brotes (inyectado por JS) */
+    const estilosBrotes = document.createElement("style");
+    estilosBrotes.textContent = `
+      @keyframes brotar {
+        0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+        55%  { transform: scale(1.15) rotate(6deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(estilosBrotes);
+
+    function gestionarBrote(e) {
+      const x = e.clientX, y = e.clientY;
+      brotarFlores(x, y);
+    }
+
+    /* Click con ratón */
+    document.addEventListener("click", gestionarBrote);
+
+    /* Toque en móviles (evita dobles brotes por el click sintético) */
+    document.addEventListener("touchstart", e => {
+      [...e.changedTouches].forEach(t => brotarFlores(t.clientX, t.clientY));
+    }, { passive: true });
+
+    /* ============================================================
+       BOTÓN "VOLVER A EMPEZAR"
+       ============================================================ */
+    const btn = document.getElementById("btnReiniciar");
+    btn.addEventListener("click", e => {
+      e.stopPropagation(); // no activar brotes con el reinicio
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      /* re-lanza la animación de crecimiento del ramo del HERO */
+      document.querySelectorAll("#ramo .grow-flower").forEach(g => {
+        g.style.animation = "none";
+        void g.offsetWidth; /* reinicia el flujo para reiniciar la animación */
+        g.style.animation = "";
+      });
+      /* vuelve a ocultar y reaparecer las secciones */
+      const p = document.querySelectorAll(".paso");
+      p.forEach(el => observador.observe(el));
+      p.forEach(el => el.classList.remove("visible"));
+      setTimeout(() => p.forEach(el => el.classList.add("visible")), 300);
+    });
+
+    /* Favicon en SVG con emoji (data URI, sin archivos externos) */
+    document.querySelector('link[rel="icon"]').href =
+      "data:image/svg+xml," + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌻</text></svg>'
+      );
+  </script>
+</body>
+</html>
